@@ -9,16 +9,15 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import com.eagletech.rainbow.MainActivity.Companion.paint
 import com.eagletech.rainbow.MainActivity.Companion.path
+import com.eagletech.rainbow.data.DrawData
 
 class RainBowView : View {
     var pr: ViewGroup.LayoutParams? = null
 
     companion object {
-        var paths = ArrayList<Path>()
-        var colors = ArrayList<Int>()
+        var drawDataList = ArrayList<DrawData>()
         var brush = Color.BLACK
     }
 
@@ -48,7 +47,6 @@ class RainBowView : View {
         )
     }
 
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
         val y = event.y
@@ -59,8 +57,7 @@ class RainBowView : View {
             }
             MotionEvent.ACTION_MOVE -> {
                 path.lineTo(x, y)
-                paths.add(path)
-                colors.add(brush)
+                drawDataList.add(DrawData(Path(path), Paint(paint)))
                 postInvalidate()
                 return true
             }
@@ -68,11 +65,9 @@ class RainBowView : View {
         }
     }
 
-
     override fun onDraw(canvas: Canvas) {
-        for (i in paths.indices) {
-            paint.color = colors[i]
-            canvas.drawPath(paths[i], paint)
+        for (drawData in drawDataList) {
+            canvas.drawPath(drawData.path, drawData.paint)
         }
     }
 }
